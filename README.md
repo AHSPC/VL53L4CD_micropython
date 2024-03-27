@@ -7,11 +7,11 @@ Depends on [our port of Adafruit's i2c_device CircuitPython library](https://git
 Example usage:
 
 ```python
-from machine import I2C, Pin
+from machine import SoftI2C, Pin
 from vl53l4cd import VL53L4CD
 
 # Make sure to set the correct pins!
-i2c = I2C(id=0, sda=Pin(0), scl=Pin(1))
+i2c = SoftI2C(sda=Pin(0), scl=Pin(1))
 
 vl53 = VL53L4CD(i2c)
 
