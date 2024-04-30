@@ -100,16 +100,16 @@ class VL53L4CD:
             b"\x00"  # 0x3b : not user-modifiable
             b"\x00"  # 0x3c : not user-modifiable
             b"\x00"  # 0x3d : not user-modifiable
-            b"\xFF"  # 0x3e : not user-modifiable
+            b"\xff"  # 0x3e : not user-modifiable
             b"\x00"  # 0x3f : not user-modifiable
-            b"\x0F"  # 0x40 : not user-modifiable
+            b"\x0f"  # 0x40 : not user-modifiable
             b"\x00"  # 0x41 : not user-modifiable
             b"\x00"  # 0x42 : not user-modifiable
             b"\x00"  # 0x43 : not user-modifiable
             b"\x00"  # 0x44 : not user-modifiable
             b"\x00"  # 0x45 : not user-modifiable
             b"\x20"  # 0x46 : interrupt configuration 0->level low detection, 1-> level high, 2-> Out of window, 3->In window, 0x20-> New sample ready , TBC
-            b"\x0B"  # 0x47 : not user-modifiable
+            b"\x0b"  # 0x47 : not user-modifiable
             b"\x00"  # 0x48 : not user-modifiable
             b"\x00"  # 0x49 : not user-modifiable
             b"\x02"  # 0x4a : not user-modifiable
@@ -122,24 +122,24 @@ class VL53L4CD:
             b"\x00"  # 0x51 : not user-modifiable
             b"\x00"  # 0x52 : not user-modifiable
             b"\x00"  # 0x53 : not user-modifiable
-            b"\xC8"  # 0x54 : not user-modifiable
+            b"\xc8"  # 0x54 : not user-modifiable
             b"\x00"  # 0x55 : not user-modifiable
             b"\x00"  # 0x56 : not user-modifiable
             b"\x38"  # 0x57 : not user-modifiable
-            b"\xFF"  # 0x58 : not user-modifiable
+            b"\xff"  # 0x58 : not user-modifiable
             b"\x01"  # 0x59 : not user-modifiable
             b"\x00"  # 0x5a : not user-modifiable
             b"\x08"  # 0x5b : not user-modifiable
             b"\x00"  # 0x5c : not user-modifiable
             b"\x00"  # 0x5d : not user-modifiable
             b"\x01"  # 0x5e : not user-modifiable
-            b"\xCC"  # 0x5f : not user-modifiable
+            b"\xcc"  # 0x5f : not user-modifiable
             b"\x07"  # 0x60 : not user-modifiable
             b"\x01"  # 0x61 : not user-modifiable
-            b"\xF1"  # 0x62 : not user-modifiable
+            b"\xf1"  # 0x62 : not user-modifiable
             b"\x05"  # 0x63 : not user-modifiable
             b"\x00"  # 0x64 : Sigma threshold MSB (mm in 14.2 format for MSB+LSB), default value 90 mm
-            b"\xA0"  # 0x65 : Sigma threshold LSB
+            b"\xa0"  # 0x65 : Sigma threshold LSB
             b"\x00"  # 0x66 : Min count Rate MSB (MCPS in 9.7 format for MSB+LSB)
             b"\x80"  # 0x67 : Min count Rate LSB
             b"\x08"  # 0x68 : not user-modifiable
@@ -148,7 +148,7 @@ class VL53L4CD:
             b"\x00"  # 0x6b : not user-modifiable
             b"\x00"  # 0x6c : Intermeasurement period MSB, 32 bits register
             b"\x00"  # 0x6d : Intermeasurement period
-            b"\x0F"  # 0x6e : Intermeasurement period
+            b"\x0f"  # 0x6e : Intermeasurement period
             b"\x89"  # 0x6f : Intermeasurement period LSB
             b"\x00"  # 0x70 : not user-modifiable
             b"\x00"  # 0x71 : not user-modifiable
@@ -165,9 +165,9 @@ class VL53L4CD:
             b"\x00"  # 0x7c : not user-modifiable
             b"\x00"  # 0x7d : not user-modifiable
             b"\x02"  # 0x7e : not user-modifiable
-            b"\xC7"  # 0x7f : not user-modifiable
-            b"\xFF"  # 0x80 : not user-modifiable
-            b"\x9B"  # 0x81 : not user-modifiable
+            b"\xc7"  # 0x7f : not user-modifiable
+            b"\xff"  # 0x80 : not user-modifiable
+            b"\x9b"  # 0x81 : not user-modifiable
             b"\x00"  # 0x82 : not user-modifiable
             b"\x00"  # 0x83 : not user-modifiable
             b"\x00"  # 0x84 : not user-modifiable
@@ -198,6 +198,16 @@ class VL53L4CD:
         dist = self._read_register(_VL53L4CD_RESULT_DISTANCE, 2)
         dist = struct.unpack(">H", dist)[0]
         return dist / 10
+
+    def get_distance(self, log_errors: bool = False):
+        """Helper to return distance and immediately call clear_interrupt()."""
+        try:
+            dist = self.distance
+            self.clear_interrupt()
+            return dist
+        except OSError as err:
+            if log_errors:
+                print("OSError: ", err)
 
     @property
     def timing_budget(self):
@@ -388,15 +398,15 @@ class VL53L4CD:
             length = len(data)
         with self.i2c_device as i2c:
             i2c.write(struct.pack(">H", address) + data[:length])
-        #self._i2c.writeto(address, struct.pack(">H", address) + data[:length])
+        # self._i2c.writeto(address, struct.pack(">H", address) + data[:length])
 
     def _read_register(self, address, length=1):
         data = bytearray(length)
         with self.i2c_device as i2c:
             i2c.write(struct.pack(">H", address))
             i2c.readinto(data)
-        #self._i2c.writeto(address, struct.pack(">H", address))
-        #self._i2c.readinto(data)
+        # self._i2c.writeto(address, struct.pack(">H", address))
+        # self._i2c.readinto(data)
         return data
 
     def set_address(self, new_address):
