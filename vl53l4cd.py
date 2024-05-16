@@ -200,10 +200,11 @@ class VL53L4CD:
         return dist / 10
 
     def get_distance(self, log_errors: bool = False) -> float:
-        """Helper to return distance and immediately call clear_interrupt()."""
+        """Helper to return distance and immediately call clear_interrupt() (twice)."""
         try:
             dist = self.distance
-            self.clear_interrupt()
+            self.clear_interrupt() # Why do we need to call this twice? 
+            self.clear_interrupt() # Does the sensor cache/queue some data or something?
             return dist
         except OSError as err:
             if log_errors:
