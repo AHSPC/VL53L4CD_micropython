@@ -199,13 +199,15 @@ class VL53L4CD:
         dist = struct.unpack(">H", dist)[0]
         return dist / 10
 
-    def get_distance(self, log_errors: bool = False) -> float:
-        """Helper to return distance and immediately call clear_interrupt() (twice)."""
+    def get_distance(self, log_errors: bool = False, wait_for_new_data: bool = True) -> float:
+        """Helper to call clear_interrupt() (twice), wait for new data, then return self.distance."""
         try:
-            dist = self.distance
             self.clear_interrupt() # Why do we need to call this twice? 
             self.clear_interrupt() # Does the sensor cache/queue some data or something?
-            return dist
+            if wait_for_new_data:
+                while not self.data_ready:
+                    pass
+            return self.distance
         except OSError as err:
             if log_errors:
                 print("OSError: ", err)
