@@ -200,7 +200,7 @@ class VL53L4CD:
         return dist / 10
 
     def get_distance(self, log_errors: bool = False, wait_for_new_data: bool = True) -> float:
-        """Helper to call clear_interrupt() (twice), wait for new data, then return self.distance."""
+        """Helper to call clear_interrupt() (twice), wait for new data, then return self.distance (+ becomes recursive on exceptions)"""
         try:
             self.clear_interrupt() # Why do we need to call this twice? 
             self.clear_interrupt() # Does the sensor cache/queue some data or something?
@@ -211,7 +211,7 @@ class VL53L4CD:
         except OSError as err:
             if log_errors:
                 print("OSError: ", err)
-            return -1
+            return self.get_distance()
 
     @property
     def timing_budget(self):
