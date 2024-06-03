@@ -2,13 +2,13 @@ from machine import I2C, Pin
 from vl53l4cd import VL53L4CD
 
 # Make sure to set the correct pins!
-i2c = I2C(id=0, sda=Pin(0), scl=Pin(1))
+i2c = SoftI2C(sda=Pin(0), scl=Pin(1))
 
 vl53 = VL53L4CD(i2c)
 
 # OPTIONAL: can set non-default values
-vl53.inter_measurement = 0
-vl53.timing_budget = 20
+vl53.inter_measurement = 0 # makes sensor run in "continuous mode"
+vl53.timing_budget = 20 # spend 20ms on each measurement
 
 print("VL53L4CD Simple Test.")
 print("--------------------")
